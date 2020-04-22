@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "target": "es5",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "pretty": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "components/*": ["assets/src/components/*"],
+      "pages/*": ["assets/src/pages/*"],
+      "common/*": ["assets/src/common/*"],
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
