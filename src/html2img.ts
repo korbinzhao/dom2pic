@@ -27,8 +27,6 @@ export default class Html2Img {
     const img = new Image();
 
     img.onload = () => {
-      console.log('onload ---');
-
       const canvas = document.createElement('canvas');
 
       const ctx = canvas.getContext('2d');
@@ -50,12 +48,6 @@ export default class Html2Img {
     img.src = `data:image/svg+xml;charset=utf-8,${svg}`;
 
     document.body.appendChild(img);
-
-
-
-
-
-
 
 
   }
