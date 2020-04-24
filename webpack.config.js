@@ -17,11 +17,11 @@ module.exports = {
           {
             loader: 'babel-loader',
           },
-          // {
-          //   loader: 'ts-loader',
-          // }
-          // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-          {loader: 'awesome-typescript-loader'},
+          {
+            loader: 'ts-loader',
+          }
+          // // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
+          // {loader: 'awesome-typescript-loader'},
         ],
 
       },
@@ -80,5 +80,8 @@ module.exports = {
       filename: "./index.html",
       chunks: ['demo']
     })
-  ]
+  ],
+  devServer: {
+    hot: true
+  }
 };

@@ -1,3 +1,3 @@
-import App from "./html2img";
+import Html2Img from "./html2img";
 
-export default App;
+export default Html2Img;

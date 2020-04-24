@@ -2,6 +2,7 @@
   "compilerOptions": {
     "jsx": "react",
     "target": "es5",
+    "lib": ["dom", "esnext", "dom.iterable", "scripthost", "es2015.promise"],
     "noImplicitAny": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -9,19 +10,14 @@
     "pretty": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./types"
-    ],
+    "typeRoots": ["./node_modules/@types", "./types"],
     "baseUrl": "./",
     "paths": {
       "components/*": ["assets/src/components/*"],
       "pages/*": ["assets/src/pages/*"],
-      "common/*": ["assets/src/common/*"],
+      "common/*": ["assets/src/common/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src", "demo"],
+  "exclude": ["node_modules", "dist"]
 }
