@@ -7,6 +7,7 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "pretty": true,
     "module": "esnext",
     "moduleResolution": "node",

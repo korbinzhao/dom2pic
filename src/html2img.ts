@@ -12,47 +12,76 @@ interface Options {
 export default class Html2Img {
   constructor(options: Options) {
     this.options = options;
+    this.init(options);
   }
 
   options: Options;
 
-  init(options) {
+  private init(options) {
     let { root, width, height } = options;
     root = typeof root === 'string' ? document.querySelector(root) : root;
 
     width = width || root.offsetWidth;
     height = height || root.offsetHeight;
+
+    this.options = {
+      root,
+      width,
+      height
+    };
+
   }
 
-  toCanvas(): Promise<HTMLCanvasElement> {
+  async toCanvas(): Promise<HTMLCanvasElement> {
     const { root, width, height } = this.options;
 
-    return cloneNodeWithStyle(root)
-      .then(cloneDom => {
+    const clone = await cloneNodeWithStyle(root);
 
-        const svgDataUri = generateSvgDataUri(cloneDom, width, height);
+    const svgDataUri = generateSvgDataUri(clone, width, height);
 
-        return generateCanvas(svgDataUri, width, height);
+    const canvas = await generateCanvas(svgDataUri, width, height);
 
-      });
+    return canvas;
   }
 
-  toPng(): Promise<string> {
-    return this.toCanvas().then((canvas) => {
-      return canvas.toDataURL('image/png');
-    })
+  async toSvg(): Promise<HTMLElement | SVGElement> {
+    const { root, width, height } = this.options;
+    const clone = await cloneNodeWithStyle(root)
+
+    const foreginObject = document.createElement('foreginObject');
+    foreginObject.setAttribute('x', '0');
+    foreginObject.setAttribute('y', '0');
+    foreginObject.setAttribute('width', '100%')
+    foreginObject.setAttribute('height', '100%');
+
+    const svg = document.createElement('svg');
+
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svg.setAttribute('width', '' + width);
+    svg.setAttribute('height', '' + height);
+
+    foreginObject.appendChild(clone);
+    svg.appendChild(foreginObject);
+
+    return svg;
+
+
   }
 
-  toJpeg(): Promise<string> {
-    return this.toCanvas().then((canvas) => {
-      return canvas.toDataURL('image/jpeg');
-    })
+  async toPng(): Promise<string> {
+    const canvas = await this.toCanvas();
+    return await canvas.toDataURL('image/png');
+  }
+
+  async toJpeg(): Promise<string> {
+    const canvas = await this.toCanvas();
+    return await canvas.toDataURL('image/jpeg');
   }
 
 }
 
 /**
- * 生成 inline SVG 内联 SVG (data:image/svg+xml 格式的 svg 图片)字符串
+ * generate inline SVG (data:image/svg+xml formate image)
  * @param dom 
  * @param width 
  * @param height 
@@ -68,26 +97,26 @@ function generateSvgDataUri(dom: HTMLElement, width: number, height: number): st
 }
 
 /**
- * 将图片加入canvas，并输出canvas
+ * output a canvas with image
  * @param url 
  * @param width 
  * @param height 
  */
-function generateCanvas(url, width, height): Promise<HTMLCanvasElement> {
-  return new Promise((resolve, reject) => {
+async function generateCanvas(url, width, height): Promise<HTMLCanvasElement> {
+
+  return await new Promise((resolve, reject) => {
     const img = new Image();
     img.setAttribute('crossorigin', 'anonymous');
 
     img.onload = () => {
 
-      const canvas = document.createElement('canvas');
+      const canvas = <HTMLCanvasElement>document.createElement('canvas');
 
       const ctx = canvas.getContext('2d');
       canvas.width = width;
       canvas.height = height;
 
       ctx.drawImage(img, 0, 0, width, height);
-
 
       resolve(canvas);
     }
@@ -103,11 +132,11 @@ function generateCanvas(url, width, height): Promise<HTMLCanvasElement> {
 }
 
 /**
- * 根据传入 uri 生成Image对象
+ * generate a image from uri
  * @param uri 
  */
-function makeImage(uri) {
-  return new Promise(function (resolve, reject) {
+async function generateImage(uri): Promise<HTMLElement> {
+  return await new Promise(function (resolve, reject) {
     var image = new Image();
     image.onload = function () {
       resolve(image);
@@ -118,19 +147,18 @@ function makeImage(uri) {
 }
 
 /**
- * 深复制节点及节点上的样式
+ * deep clone node width style
  * @param node 
  */
-async function cloneNodeWithStyle(node) {
+async function cloneNodeWithStyle(node): Promise<HTMLElement> {
 
-  const clone = node instanceof HTMLCanvasElement ? await makeImage(node.toDataURL()) : node.cloneNode(false);
+  const clone = node instanceof HTMLCanvasElement ? await generateImage(node.toDataURL()) : node.cloneNode(false);
 
   const children = node.childNodes;
 
   for await (const child of children) {
-    await cloneNodeWithStyle(child).then((clonedChildWithStyle) => {
-      clone.appendChild(clonedChildWithStyle);
-    });
+    const clonedChildWithStyle = await cloneNodeWithStyle(child);
+    clone.appendChild(clonedChildWithStyle);
   }
 
   function copyStyle(node, clone) {
@@ -144,30 +172,30 @@ async function cloneNodeWithStyle(node) {
 
   }
 
-  if (node instanceof HTMLElement) {
+  if (clone instanceof HTMLElement) {
 
-    if (node.tagName === 'IMG') {
+    if (clone.tagName === 'IMG') {
 
       await new Promise((resolve, reject) => {
-        node.onload = () => {
+        clone.onload = async () => {
 
-          generateCanvas(
+          copyStyle(node, clone);
+
+          const canvas = await generateCanvas(
             node.getAttribute('src'),
             node.offsetWidth,
             node.offsetHeight
-          ).then(canvas => {
-            return canvas.toDataURL();
-          }).then((uri) => {
-            clone.setAttribute('src', uri);
-            copyStyle(node, clone);
+          );
 
-            resolve(uri);
+          const uri = canvas.toDataURL();
+          clone.setAttribute('src', uri);
 
-          });
+          resolve(uri);
+
 
         }
 
-        node.onerror = () => {
+        clone.onerror = () => {
           reject(clone);
         }
       });

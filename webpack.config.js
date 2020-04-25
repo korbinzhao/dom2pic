@@ -8,6 +8,7 @@ module.exports = {
     demo: './demo/index.tsx',
     index: './src/index.ts'
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
