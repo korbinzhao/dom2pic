@@ -1,3 +1,3 @@
-import Html2Img from "./html2img";
+import Dom2pic from "./dom2pic";
 
-export default Html2Img;
+export default Dom2pic;

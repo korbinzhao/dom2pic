@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import Html2Img from '../src/index';
+import Dom2pic from '../src/index';
 
 import { Table } from 'antd';
 
@@ -12,13 +12,13 @@ const App = () => {
   const [svg, setSvg] = useState(null);
 
   const doScreenshot = async () => {
-    const html2img = new Html2Img({
+    const dom2pic = new Dom2pic({
       root: document.querySelector('.content2screenshot'),
       width: 3000,
       height: 800
     });
 
-    html2img.toPng()
+    dom2pic.toPng()
       .then(png => {
 
         console.log('--- png ---', png);
@@ -27,7 +27,7 @@ const App = () => {
 
       });
 
-    html2img.toSvg().then(svg => {
+    dom2pic.toSvg().then(svg => {
       document.body.appendChild(svg);
     });
 

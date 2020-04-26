@@ -1,5 +1,5 @@
 {
-  "name": "html2img",
+  "name": "dom2pic",
   "version": "1.0.0",
   "description": "transfer a html dom to canvas/png/jpeg",
   "main": "lib/index.js",

@@ -1,16 +1,16 @@
-# html2img
+# dom2pic
 transfer a html dom to canvas/png/jpeg
 
 # usage
 
 ```
-const html2img = new Html2Img({
+const dom2pic = new Dom2pic({
   root: document.querySelector('.content2screenshot'),
   width: 1000,
   height: 800
 });
 
-html2img.toPng()
+dom2pic.toPng()
   .then(png => {
 
     console.log('--- png ---', png);
@@ -19,7 +19,7 @@ html2img.toPng()
 
   });
 
-html2img.toSvg().then(svg => {
+dom2pic.toSvg().then(svg => {
   document.body.appendChild(svg);
 });
 ```
