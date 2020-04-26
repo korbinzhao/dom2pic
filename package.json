@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/korbinzhao/dom2pic"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["dom2pic", "dom2img", "dom2image", "html2img", "html2image"],
+  "author": "korbinzhao",
   "license": "MIT",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/korbinzhao/dom2pic/issues"
   },
-  "homepage": "",
+  "homepage": "https://github.com/korbinzhao/dom2pic",
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
