@@ -1,7 +1,30 @@
-# react-webpack4-typescript-component-quickstart
-a quick start for a component based on react & webpack4 & typescript
+# html2img
+transfer a html dom to canvas/png/jpeg
 
-# development
+# usage
+
+```
+const html2img = new Html2Img({
+  root: document.querySelector('.content2screenshot'),
+  width: 1000,
+  height: 800
+});
+
+html2img.toPng()
+  .then(png => {
+
+    console.log('--- png ---', png);
+
+    setScreenshot(png);
+
+  });
+
+html2img.toSvg().then(svg => {
+  document.body.appendChild(svg);
+});
+```
+
+# demo && development
 ```
 npm install
 

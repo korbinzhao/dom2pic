@@ -3,9 +3,6 @@ import ReactDOM from "react-dom";
 import Html2Img from '../src/index';
 
 import { Table, Menu } from 'antd';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
-
-const { SubMenu } = Menu;
 
 import './index.less';
 
@@ -17,7 +14,7 @@ const App = () => {
   const doScreenshot = async () => {
     const html2img = new Html2Img({
       root: document.querySelector('.content2screenshot'),
-      width: 1000,
+      width: 3000,
       height: 800
     });
 
@@ -40,43 +37,38 @@ const App = () => {
 
     console.log('componentDidMount')
 
-    setTimeout(() => {
-
-      doScreenshot();
-
-    }, 1000)
-
+    doScreenshot();
 
   }, []);
 
   const dataSource = [
     {
       key: '1',
-      name: '胡彦斌',
+      name: 'JACK',
       age: 32,
-      address: '西湖区湖底公园1号',
+      address: 'street 1',
     },
     {
       key: '2',
-      name: '胡彦祖',
+      name: 'TOM',
       age: 42,
-      address: '西湖区湖底公园1号',
+      address: 'street 2',
     },
   ];
 
   const columns = [
     {
-      title: '姓名',
+      title: 'name',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: '年龄',
+      title: 'age',
       dataIndex: 'age',
       key: 'age',
     },
     {
-      title: '住址',
+      title: 'address',
       dataIndex: 'address',
       key: 'address',
     },
@@ -87,9 +79,12 @@ const App = () => {
 
   return (
     <div className="container">
+
+      <h1 className="divider">ORIGIN</h1>
+
       <div className="content2screenshot">
 
-        <Table dataSource={dataSource} columns={columns} />
+        <Table dataSource={dataSource} columns={columns} pagination={false} />
 
 
         hello world
@@ -103,14 +98,14 @@ const App = () => {
 
       </div>
 
-      <h2>--- screenshot ---</h2>
+      <h1 className="divider">SCREENSHOT</h1>
 
       <img src={screenshot} alt="" />
 
-      <h2>--- svg ---</h2>
+      <h1 className="divider">SVG</h1>
 
     </div>
-    
+
   );
 };
 
