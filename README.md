@@ -1,5 +1,5 @@
 # dom2pic
-transfer a html dom to canvas/png/jpeg
+transfer a html dom to canvas/png/jpeg/svg
 
 # usage
 
@@ -13,18 +13,44 @@ const dom2pic = new Dom2pic({
 });
 
 dom2pic.toPng()
-  .then(png => {
+  .then(base64 => {
 
-    console.log('--- png ---', png);
+    console.log('--- png base64 ---', base64);
 
-    setScreenshot(png);
+  });
+
+dom2pic.toJpeg()
+  .then(base64 => {
+
+    console.log('--- jpeg base64 ---', base64);
 
   });
 
 dom2pic.toSvg().then(svg => {
   document.body.appendChild(svg);
 });
+
+
+dom2pic.toCanvas()
+  .then(canvas => {
+
+    console.log('--- canvas ---', canvas);
+
+  });
+
 ```
+
+# API
+
+* toCanvas
+  * generate a canvas from a dom element
+* toPng
+  * generate a png base64 string from a dom element
+* toJpeg
+  * generate a jpeg base64 string from a dom element
+* toSvg
+  * generate a svg from a dom element
+
 
 # demo && development
 ```
