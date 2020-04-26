@@ -4,6 +4,8 @@ transfer a html dom to canvas/png/jpeg
 # usage
 
 ```
+const Dom2pic = require('dom2pic');
+
 const dom2pic = new Dom2pic({
   root: document.querySelector('.content2screenshot'),
   width: 1000,
