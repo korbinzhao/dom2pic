@@ -16,13 +16,8 @@ module.exports = {
         exclude: /(node_modules|bower_components)/,
         use: [
           {
-            loader: 'babel-loader',
-          },
-          {
-            loader: 'ts-loader',
+            loader: "awesome-typescript-loader"
           }
-          // // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-          // {loader: 'awesome-typescript-loader'},
         ],
 
       },

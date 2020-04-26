@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import Html2Img from '../src/index';
 
-import { Table, Menu } from 'antd';
+import { Table } from 'antd';
 
 import './index.less';
 
@@ -73,9 +73,6 @@ const App = () => {
       key: 'address',
     },
   ];
-
-
-
 
   return (
     <div className="container">

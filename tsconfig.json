@@ -20,5 +20,13 @@
     }
   },
   "include": ["src", "demo"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "awesomeTypescriptLoaderOptions": {
+    "useCache": true,
+    "transpileOnly": false,
+    "forceIsolatedModules": true,
+    "useBabel": true,
+    "babelCore": "@babel/core",
+    "reportFiles": ["src/**/*.{ts,tsx}", "demo/**/*.{ts,tsx}"]
+  }
 }

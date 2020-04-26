@@ -12,22 +12,18 @@ interface Options {
 export default class Html2Img {
   constructor(options: Options) {
     this.options = options;
-    this.init(options);
+    this.initOptions(options);
   }
 
   options: Options;
 
-  private init(options) {
-    let { root, width, height } = options;
-    root = typeof root === 'string' ? document.querySelector(root) : root;
-
-    width = width || root.offsetWidth;
-    height = height || root.offsetHeight;
+  private initOptions(options) {
+    const { root, width, height } = options;
 
     this.options = {
-      root,
-      width,
-      height
+      root: typeof root === 'string' ? document.querySelector(root) : root,
+      width: width || root.offsetWidth,
+      height: height || root.offsetHeight
     };
 
   }

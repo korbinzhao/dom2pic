@@ -1,7 +1,7 @@
 {
-  "name": "component-react-typescript-webpack4",
+  "name": "html2img",
   "version": "1.0.0",
-  "description": "a generator for component based on react & typescript & webpack4",
+  "description": "transfer a html dom to canvas/png/jpeg",
   "main": "lib/index.js",
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
@@ -21,25 +21,23 @@
   },
   "homepage": "",
   "devDependencies": {
-    "@ant-design/icons": "^4.0.6",
-    "@babel/cli": "7.2.3",
-    "@babel/core": "7.2.2",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "7.2.3",
     "@babel/plugin-proposal-object-rest-spread": "7.2.0",
     "@babel/plugin-syntax-dynamic-import": "7.2.0",
     "@babel/plugin-transform-modules-commonjs": "7.2.0",
     "@babel/plugin-transform-proto-to-assign": "7.2.0",
-    "@babel/plugin-transform-regenerator": "7.0.0",
     "@babel/plugin-transform-runtime": "7.2.0",
-    "@babel/preset-env": "7.2.3",
-    "@babel/preset-react": "7.0.0",
-    "@babel/preset-typescript": "7.3.3",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/preset-typescript": "^7.9.0",
     "@typescript-eslint/eslint-plugin": "1.4.2",
     "@typescript-eslint/parser": "1.4.2",
     "antd": "4.1.4",
     "autoprefixer": "9.1.3",
-    "awesome-typescript-loader": "5.2.1",
-    "babel-loader": "8.0.4",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.1.0",
     "babel-plugin-add-module-exports": "1.0.0",
     "babel-plugin-import": "1.11.0",
     "babel-plugin-import-inspector": "2.0.0",
@@ -59,14 +57,14 @@
     "postcss-import": "12.0.0",
     "postcss-loader": "3.0.0",
     "style-loader": "0.23.1",
-    "ts-loader": "5.3.3",
-    "typescript": "3.3.3333",
-    "webpack": "4.29.6",
-    "webpack-cli": "3.3.0",
-    "webpack-dev-server": "3.2.1"
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
-    "react": "16.8.5",
-    "react-dom": "16.8.5"
+    "core-js": "^3.6.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   }
 }
