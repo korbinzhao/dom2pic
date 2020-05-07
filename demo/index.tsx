@@ -15,7 +15,7 @@ const App = () => {
     const dom2pic = new Dom2pic({
       root: document.querySelector('.content2screenshot'),
       width: 3000,
-      height: 800
+      height: 1600
     });
 
     dom2pic.toPng()
@@ -97,7 +97,7 @@ const App = () => {
 
       <h1 className="divider">SCREENSHOT</h1>
 
-      <img src={screenshot} alt="" />
+      <img style={{width: '100%'}} src={screenshot} alt="" />
 
       <h1 className="divider">SVG</h1>
 
