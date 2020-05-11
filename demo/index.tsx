@@ -11,11 +11,9 @@ const App = () => {
   const [screenshot, setScreenshot] = useState('');
   const [svg, setSvg] = useState(null);
 
-  const doScreenshot = async () => {
+  const doScreenshot = () => {
     const dom2pic = new Dom2pic({
       root: document.querySelector('.content2screenshot'),
-      width: 3000,
-      height: 1600
     });
 
     dom2pic.toPng()
@@ -27,7 +25,16 @@ const App = () => {
 
       });
 
+    dom2pic.toJpeg().then(jpeg => {
+
+      console.log('--- jpeg ---', jpeg);
+
+    })
+
     dom2pic.toSvg().then(svg => {
+
+      console.log('--- svg ---', svg);
+
       document.body.appendChild(svg);
     });
 
@@ -37,7 +44,10 @@ const App = () => {
 
     console.log('componentDidMount')
 
-    doScreenshot();
+    // setTimeout(() => {
+      doScreenshot();
+
+    // }, 2000)
 
   }, []);
 

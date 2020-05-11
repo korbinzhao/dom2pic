@@ -3,37 +3,76 @@
  * 
  */
 
+ interface Config{
+   root: HTMLElement;
+ }
+
 interface Options {
   root: HTMLElement; // html dom
-  width?: number;
-  height?: number;
+  width: number; // dom offsetWidth
+  height: number; // dom offsetHeight
 }
 
 const SCALE = 2; // canvas context scale
 
 export default class Html2Img {
-  constructor(options: Options) {
-    this.options = options;
-    this.initOptions(options);
+  constructor(config: Config) {
+    
+    this.config = config;
+    this.init();
+
   }
 
+  config: Config;
   options: Options;
 
-  private initOptions(options) {
-    const { root, width, height } = options;
+  private async init() {
+    await this.initOptions();
+  }
+
+  private async waitImagesLoad() {
+    const { root } = this.config;
+
+    const imgs = root.querySelectorAll('img');
+
+    const promises = [];
+
+    imgs.forEach(img => {
+      if (!img.complete) {
+        promises.push(new Promise((resolve, reject) => {
+          img.addEventListener('load', () => {
+            resolve(img);
+          });
+        }))
+      }
+    });
+
+    return await Promise.all(promises);
+
+  }
+
+  private async initOptions() {
+    const { root } = this.config;
+
+    await this.waitImagesLoad();
+
+    const rootEle = typeof root === 'string' ? document.querySelector(root) : root;
 
     this.options = {
-      root: typeof root === 'string' ? document.querySelector(root) : root,
-      width: width || root.offsetWidth,
-      height: height || root.offsetHeight
+      root: rootEle,
+      width: rootEle.offsetWidth,
+      height: rootEle.offsetHeight
     };
 
   }
 
   async toCanvas(): Promise<HTMLCanvasElement> {
+
+    await this.initOptions();
+
     const { root, width, height } = this.options;
 
-    const clone = await cloneNodeWithStyle(root);
+    const clone = await deepCloneNode(root);
 
     const svgDataUri = generateSvgDataUri(clone, width, height);
 
@@ -43,8 +82,12 @@ export default class Html2Img {
   }
 
   async toSvg(): Promise<HTMLElement | SVGElement> {
+    
+    await this.initOptions();
+
     const { root, width, height } = this.options;
-    const clone = await cloneNodeWithStyle(root)
+
+    const clone = await deepCloneNode(root)
 
     const foreginObject = document.createElement('foreginObject');
     foreginObject.setAttribute('x', '0');
@@ -67,7 +110,9 @@ export default class Html2Img {
   }
 
   async toPng(): Promise<string> {
+
     const canvas = await this.toCanvas();
+
     return await canvas.toDataURL('image/png');
   }
 
@@ -103,16 +148,18 @@ function generateSvgDataUri(dom: HTMLElement, width: number, height: number): st
 async function generateCanvas(url, width, height): Promise<HTMLCanvasElement> {
 
   let isSvg = false; // url is svg uri format, such as 'data:image/svg+xml;charset=utf-8,<svg ...'
-  if(url.indexOf(',<svg ') !== -1){ 
+  if (url.indexOf(',<svg ') !== -1) {
     isSvg = true;
   }
 
-  return await new Promise((resolve, reject) => {
-    const img = new Image();
-    img.setAttribute('crossorigin', 'anonymous');
-    img.setAttribute('width', width);
-    img.setAttribute('height', height);
+  const img = new Image();
+  img.setAttribute('crossorigin', 'anonymous');
+  img.setAttribute('width', width);
+  img.setAttribute('height', height);
 
+  img.src = url;
+
+  const canvas: HTMLCanvasElement = await new Promise((resolve, reject) => {
     img.onload = () => {
 
       const canvas = <HTMLCanvasElement>document.createElement('canvas');
@@ -121,11 +168,17 @@ async function generateCanvas(url, width, height): Promise<HTMLCanvasElement> {
       canvas.width = width * SCALE;
       canvas.height = height * SCALE;
 
-      if(isSvg){
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-      }
+      // canvas.width = width;
+      // canvas.height = height;
 
-      ctx.drawImage(img, 0, 0, width * SCALE, height * SCALE);
+      // if (isSvg) {
+      //   ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      // }
+
+      ctx.scale(SCALE, SCALE);
+
+      // ctx.drawImage(img, 0, 0, width * SCALE, height * SCALE);
+      ctx.drawImage(img, 0, 0, width, height);
 
       resolve(canvas);
     }
@@ -134,9 +187,11 @@ async function generateCanvas(url, width, height): Promise<HTMLCanvasElement> {
       reject(err);
     }
 
-    img.src = url;
 
   });
+
+
+  return canvas;
 
 }
 
@@ -144,85 +199,105 @@ async function generateCanvas(url, width, height): Promise<HTMLCanvasElement> {
  * generate a image from uri
  * @param uri 
  */
-async function generateImage(uri): Promise<HTMLElement> {
+async function generateImage(uri, width, height): Promise<HTMLElement> {
+
   return await new Promise(function (resolve, reject) {
-    var image = new Image();
-    image.onload = function () {
-      resolve(image);
-    };
-    image.onerror = reject;
+    const image = new Image();
+
+    image.addEventListener('load', async () => {
+      if (image.src.indexOf('data:image/') !== 0) {
+        const canvas = await generateCanvas(uri, width, height);
+        const dataUri = canvas.toDataURL();
+        image.src = dataUri;
+      } else {
+        resolve(image);
+      }
+    });
+
+    image.addEventListener('error', (err) => {
+      console.warn(JSON.stringify(err));
+      reject(err);
+    });
+
     image.src = uri;
+    image.style.width = `${width}px`;
+    image.style.height = `${height}px`;
   });
+}
+
+/**
+ * shallow clone a dom node, and async await a img/canvas dom loaded
+ * @param node 
+ */
+async function shallowCloneNode(node): Promise<HTMLElement> {
+  if (node instanceof HTMLCanvasElement) {
+    return await generateImage(node.toDataURL(), node.offsetWidth, node.offsetHeight);
+  } else if (node instanceof HTMLImageElement) {
+
+    if (node.complete) {
+      return await generateImage(node.getAttribute('src'), node.offsetWidth, node.offsetHeight);
+    } else {
+      return await new Promise((resolve, reject) => {
+
+        node.addEventListener('load', async () => {
+
+          const img = await generateImage(node.getAttribute('src'), node.offsetWidth, node.offsetHeight);
+
+          resolve(img);
+        });
+
+        node.addEventListener('error', async (err) => {
+          console.warn(err);
+          reject(err);
+        });
+
+      });
+
+    }
+
+  } else {
+    const clone = node.cloneNode(false);
+    if (clone instanceof HTMLElement) {
+      copyStyle(node, clone);
+    }
+    return clone;
+  }
+}
+
+/**
+ * copy style from a dom to another dom
+ * @param node 
+ * @param clone 
+ */
+function copyStyle(node, clone) {
+  const style = window.getComputedStyle(node);
+
+  if (style.cssText) {
+    clone.style.cssText = style.cssText;
+  }
+
+  return clone;
+
 }
 
 /**
  * deep clone node width style
  * @param node 
  */
-async function cloneNodeWithStyle(node): Promise<HTMLElement> {
+async function deepCloneNode(node): Promise<HTMLElement> {
 
-  const clone = node instanceof HTMLCanvasElement ? await generateImage(node.toDataURL()) : node.cloneNode(false);
+  const clone = await shallowCloneNode(node);
 
   const children = node.childNodes;
 
   if (children && children.length) {
     for await (const child of children) {
-      const clonedChildWithStyle = await cloneNodeWithStyle(child);
+      const clonedChildWithStyle = await deepCloneNode(child);
+
       if (clonedChildWithStyle) {
         clone.appendChild(clonedChildWithStyle);
       }
     }
-  }
-
-  function copyStyle(node, clone) {
-    const style = window.getComputedStyle(node);
-
-    if (style.cssText) {
-      clone.style.cssText = style.cssText;
-    }
-
-    return clone;
-
-  }
-
-  if (clone instanceof HTMLElement) {
-
-    if (clone.tagName === 'IMG') {
-
-      await new Promise((resolve, reject) => {
-        clone.onload = async () => {
-
-          // forbidden drop-dead halt cloned img onload
-          if(clone.getAttribute('data-is-loaded')){
-            return false;
-          }
-          clone.setAttribute('data-is-loaded', 'true');
-
-          copyStyle(node, clone);
-
-          const canvas = await generateCanvas(
-            node.getAttribute('src'),
-            node.offsetWidth,
-            node.offsetHeight
-          );
-
-          const uri = canvas.toDataURL();
-
-          clone.setAttribute('src', uri);
-
-          resolve(uri);
-
-        }
-
-        clone.onerror = () => {
-          reject(clone);
-        }
-      });
-
-    } else {
-      copyStyle(node, clone);
-    }
-
   }
 
   return clone;
