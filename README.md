@@ -7,9 +7,7 @@ transfer a html dom to canvas/png/jpeg/svg
 const Dom2pic = require('dom2pic');
 
 const dom2pic = new Dom2pic({
-  root: document.querySelector('.content2screenshot'),
-  width: 1000,
-  height: 800
+  root: document.querySelector('.content2screenshot')
 });
 
 dom2pic.toPng()
