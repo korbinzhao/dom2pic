@@ -1,7 +1,7 @@
 {
   "name": "dom2pic",
   "version": "1.0.3",
-  "description": "transfer a html dom to canvas/png/jpeg",
+  "description": "transfer a html dom to canvas/png/jpeg/svg element/multiple pictures",
   "main": "lib/index.js",
   "scripts": {
     "start": "webpack-dev-server --mode development --open",

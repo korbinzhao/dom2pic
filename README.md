@@ -1,5 +1,5 @@
 # dom2pic
-transfer a html dom to canvas/png/jpeg/svg
+transfer a html dom to canvas/png/jpeg/svg element/multiple pictures
 
 # usage
 
