@@ -8,12 +8,9 @@ import './index.less';
 
 const App = () => {
 
-  const [screenshot, setScreenshot] = useState('');
-  const [svg, setSvg] = useState(null);
-
   const doScreenshot = () => {
     const dom2pic = new Dom2pic({
-      root: document.querySelector('.content2screenshot'),
+      root: document.querySelector('.content2screenshot') as HTMLElement,
     });
 
     dom2pic.toPng()
@@ -21,7 +18,10 @@ const App = () => {
 
         console.log('--- png ---', png);
 
-        setScreenshot(png);
+        // const img = document.createElement('img');
+        // img.src = png;
+        // img.style.width = '100%';
+        // document.body.appendChild(img);
 
       });
 
@@ -29,14 +29,33 @@ const App = () => {
 
       console.log('--- jpeg ---', jpeg);
 
+      // const img = document.createElement('img');
+      // img.src = jpeg;
+      // img.style.width = '100%';
+      // document.body.appendChild(img);
+
     })
 
     dom2pic.toSvg().then(svg => {
 
       console.log('--- svg ---', svg);
 
-      document.body.appendChild(svg);
+      // document.body.appendChild(svg);
     });
+
+
+    const dom2pic2 = new Dom2pic({root: document.querySelector('.content2screenshot') as HTMLElement});
+
+    dom2pic2.toMultiPic('.item').then(results => {
+      console.log('--- results ---', results);
+
+      results.forEach(obj => {
+        const img = document.createElement('img');
+        img.src = obj.uri;
+        img.style.width = '200px';
+        document.body.appendChild(img);
+      })
+    })
 
   }
 
@@ -44,10 +63,7 @@ const App = () => {
 
     console.log('componentDidMount')
 
-    // setTimeout(() => {
-      doScreenshot();
-
-    // }, 2000)
+    doScreenshot();
 
   }, []);
 
@@ -91,25 +107,30 @@ const App = () => {
 
       <div className="content2screenshot">
 
-        <Table dataSource={dataSource} columns={columns} pagination={false} />
+        <svg className="item" width="100px" height="100px">
+          <rect x="50" y="20" width="150" height="150" style={{ fill: 'blue', stroke: 'pink', strokeWidth: 5, opacity: 0.5 }} />
+        </svg>
+
+        <Table className="item" dataSource={dataSource} columns={columns} pagination={false} />
 
 
         hello world
 
-        <p>123</p>
-        <span className="text1">234</span>
-        <span className="text2">567</span>
+        <p  className="item">123</p>
+        <span className="text1 item">234</span>
+        <span className="text2 item">567</span>
 
-        <img src="https://img.alicdn.com/tfs/TB1_ThFurj1gK0jSZFOXXc7GpXa-680-453.jpg" alt="" />
+        {/* <img className="demo-img item" src="https://img.alicdn.com/tfs/TB1_ThFurj1gK0jSZFOXXc7GpXa-680-453.jpg" alt="" /> */}
 
+        <svg className="item" width="500px" height="500px">
+          <foreignObject x="0" y="0" width="100%" height="100%">
+            <img className="demo-img" src="https://img.alicdn.com/tfs/TB1_ThFurj1gK0jSZFOXXc7GpXa-680-453.jpg" alt="" />
+          </foreignObject>
+        </svg>
 
       </div>
 
-      <h1 className="divider">SCREENSHOT</h1>
-
-      <img style={{width: '100%'}} src={screenshot} alt="" />
-
-      <h1 className="divider">SVG</h1>
+      <span className="divider">--------------- output ---------------</span>
 
     </div>
 

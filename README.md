@@ -36,6 +36,18 @@ dom2pic.toCanvas()
 
   });
 
+
+dom2pic2.toMultiPic('.item', 'jpeg').then(results => {
+  console.log('--- results ---', results);
+
+  results.forEach(obj => {
+    const img = document.createElement('img');
+    img.src = obj.uri;
+    img.style.width = '200px';
+    document.body.appendChild(img);
+  })
+})
+
 ```
 
 # API
