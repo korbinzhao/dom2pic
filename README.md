@@ -60,6 +60,8 @@ dom2pic2.toMultiPic('.item', 'jpeg').then(results => {
   * generate a jpeg base64 string from a dom element
 * toSvg
   * generate a svg from a dom element
+* toMultiPic
+  * generate multiple pictures according to child html dom
 
 
 # demo && development
