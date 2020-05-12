@@ -61,7 +61,7 @@ dom2pic2.toMultiPic('.item', 'jpeg').then(results => {
 * toSvg
   * generate a svg from a dom element
 * toMultiPic
-  * generate multiple pictures according to child html dom
+  * generate multiple pictures according to child dom className
 
 
 # demo && development
