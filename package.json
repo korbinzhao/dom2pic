@@ -18,7 +18,13 @@
     "dom2img",
     "dom2image",
     "html2img",
-    "html2image"
+    "html2image",
+    "domtoimg",
+    "domtoimage",
+    "domtopic",
+    "htmltoimg",
+    "htmltoimage",
+    "htmltopic"
   ],
   "author": "korbinzhao",
   "license": "MIT",
