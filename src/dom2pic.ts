@@ -5,6 +5,7 @@
 
  interface Config{
    root: HTMLElement | string; // root html dom to screenshot, cannot be absolute position
+   backgroundColor?: string; // root dom backgroundColor
  }
 
 interface Options {
@@ -64,8 +65,12 @@ export default class Dom2pic {
   }
 
   private async initOptions() {
-    const { root } = this.config;
+    const { root, backgroundColor } = this.config;
     const rootEle: HTMLElement = typeof root === 'string' ? document.querySelector(root) : root;
+
+    if(!rootEle.style.backgroundColor && !rootEle.style.background){
+      rootEle.style.backgroundColor = backgroundColor || '#fff';
+    }
 
     await this.waitImagesLoad(rootEle);
 
@@ -90,6 +95,8 @@ export default class Dom2pic {
     const svgDataUri = generateSvgDataUri(clone, width, height);
 
     const canvas = await generateCanvas(svgDataUri, width, height);
+
+    console.log(svgDataUri, canvas);
 
     return canvas;
   }
