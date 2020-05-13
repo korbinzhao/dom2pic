@@ -18,10 +18,10 @@ const App = () => {
 
         console.log('--- png ---', png);
 
-        // const img = document.createElement('img');
-        // img.src = png;
-        // img.style.width = '100%';
-        // document.body.appendChild(img);
+        const img = document.createElement('img');
+        img.src = png;
+        img.style.width = '100%';
+        document.body.appendChild(img);
 
       });
 
@@ -29,10 +29,10 @@ const App = () => {
 
       console.log('--- jpeg ---', jpeg);
 
-      // const img = document.createElement('img');
-      // img.src = jpeg;
-      // img.style.width = '100%';
-      // document.body.appendChild(img);
+      const img = document.createElement('img');
+      img.src = jpeg;
+      img.style.width = '100%';
+      document.body.appendChild(img);
 
     })
 
@@ -40,7 +40,7 @@ const App = () => {
 
       console.log('--- svg ---', svg);
 
-      // document.body.appendChild(svg);
+      document.body.appendChild(svg);
     });
 
 
@@ -52,7 +52,7 @@ const App = () => {
       results.forEach(obj => {
         const img = document.createElement('img');
         img.src = obj.uri;
-        img.style.width = '200px';
+        img.style.width = '500px';
         document.body.appendChild(img);
       })
     })
@@ -113,20 +113,17 @@ const App = () => {
 
         <Table className="item" dataSource={dataSource} columns={columns} pagination={false} />
 
-
-        hello world
-
         <p  className="item">123</p>
         <span className="text1 item">234</span>
         <span className="text2 item">567</span>
 
-        {/* <img className="demo-img item" src="https://img.alicdn.com/tfs/TB1_ThFurj1gK0jSZFOXXc7GpXa-680-453.jpg" alt="" /> */}
+        <img className="demo-img item" src="https://img.alicdn.com/tfs/TB1_ThFurj1gK0jSZFOXXc7GpXa-680-453.jpg" alt="" />
 
-        <svg className="item" width="500px" height="500px">
+        {/* <svg className="item" width="500px" height="500px">
           <foreignObject x="0" y="0" width="100%" height="100%">
             <img className="demo-img" src="https://img.alicdn.com/tfs/TB1_ThFurj1gK0jSZFOXXc7GpXa-680-453.jpg" alt="" />
           </foreignObject>
-        </svg>
+        </svg> */}
 
       </div>
 

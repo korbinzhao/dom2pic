@@ -3,19 +3,21 @@
  * 
  */
 
- interface Config{
-   root: HTMLElement | string; // root html dom to screenshot, cannot be absolute position
-   backgroundColor?: string; // root dom backgroundColor
- }
+ import {sleep} from './util';
+
+interface Config {
+  root: HTMLElement | string; // root html dom to screenshot, cannot be absolute position
+  backgroundColor?: string; // root dom backgroundColor
+}
 
 interface Options {
-  root: HTMLElement; 
+  root: HTMLElement;
   childNodeSelector?: string;
   width: number; // dom offsetWidth
   height: number; // dom offsetHeight
 }
 
-interface ChildPicInfo{
+interface ChildPicInfo {
   left: number;
   top: number;
   width: number;
@@ -27,7 +29,6 @@ const SCALE = 2; // canvas context scale
 
 export default class Dom2pic {
   constructor(config: Config) {
-    
     this.config = config;
     this.init();
 
@@ -45,7 +46,6 @@ export default class Dom2pic {
    * @param root HTMLElement
    */
   private async waitImagesLoad(root) {
-
     const imgs = root instanceof HTMLImageElement ? [root] : root.querySelectorAll('img');
 
     const promises = [];
@@ -68,7 +68,7 @@ export default class Dom2pic {
     const { root, backgroundColor } = this.config;
     const rootEle: HTMLElement = typeof root === 'string' ? document.querySelector(root) : root;
 
-    if(!rootEle.style.backgroundColor && !rootEle.style.background){
+    if (!rootEle.style.backgroundColor && !rootEle.style.background) {
       rootEle.style.backgroundColor = backgroundColor || '#fff';
     }
 
@@ -82,27 +82,38 @@ export default class Dom2pic {
 
   }
 
-  async toCanvas(): Promise<HTMLCanvasElement> {
-
+  /**
+   * 
+   * @param i 
+   * @param childNodeSelector 
+   */
+  async toCanvas(i?, childNodeSelector?): Promise<HTMLCanvasElement> {
     await this.initOptions();
 
     const { root, width, height } = this.options;
 
     const clone = await deepCloneNode(root);
 
+
+    if (i > -1 && childNodeSelector) {
+      const childNodes = clone.querySelectorAll(childNodeSelector);
+
+      showNodeAndHideSiblings(i, childNodes);
+
+      await sleep(200);
+    }
+
+    // forbidden screenshot the margin of the root node
     clone.style.margin = '0 0 0 0';
 
     const svgDataUri = generateSvgDataUri(clone, width, height);
 
     const canvas = await generateCanvas(svgDataUri, width, height);
 
-    console.log(svgDataUri, canvas);
-
     return canvas;
   }
 
   async toSvg(): Promise<HTMLElement | SVGElement> {
-    
     await this.initOptions();
 
     const { root, width, height } = this.options;
@@ -126,13 +137,10 @@ export default class Dom2pic {
 
     return svg;
 
-
   }
 
   async toPng(): Promise<string> {
-
     const canvas = await this.toCanvas();
-
     return await canvas.toDataURL('image/png');
   }
 
@@ -147,8 +155,7 @@ export default class Dom2pic {
    */
   async toMultiPictures(childNodeSelector, type = 'png'): Promise<ChildPicInfo[]> {
 
-    const canvas = await this.toCanvas();
-    const totalPicUri = await canvas.toDataURL(`image/${type}`);
+    await this.initOptions();
 
     const { root } = this.options;
 
@@ -156,16 +163,20 @@ export default class Dom2pic {
 
     const output = [];
 
-    for await (const node of childNodes){
-      const {left, top, width, height} = getChildRectRelative2Parent(node, root);
+    for await (const [i, node] of childNodes.entries()) {
+
+      const { left, top, width, height } = getChildRectRelative2Parent(node, root);
+
+      const canvas = await this.toCanvas(i, childNodeSelector);
+      const totalPicUri = await canvas.toDataURL(`image/${type}`);
 
       const childCanvas = await generateCanvas(totalPicUri, width * SCALE, height * SCALE, 0, 0, width * SCALE, height * SCALE, left * SCALE, top * SCALE);
 
       output.push({
-        left, 
-        top, 
-        width, 
-        height, 
+        left,
+        top,
+        width,
+        height,
         uri: childCanvas.toDataURL(`image/${type}`)
       });
     }
@@ -177,18 +188,45 @@ export default class Dom2pic {
 }
 
 /**
+ * level up a node zindex from siblings
+ * @param i 
+ * @param siblings 
+ */
+function showNodeAndHideSiblings(i, siblings) {
+
+  siblings.forEach((sibling, index) => {
+    if (index === i) {
+      sibling.style.visibility = 'visible';
+    } else {
+      sibling.style.visibility = 'hidden';
+    }
+  });
+
+}
+
+/**
+ * set all nodes style.visibility to 'visible'
+ * @param nodes 
+ */
+function showNodes(nodes) {
+  nodes.forEach(node => {
+    node.style.visibility = 'visible';
+  });
+}
+
+/**
  * get child element rect relative 2 parent element
  * @param child HTMLElement
  * @param parent HTMLElement
  */
-function getChildRectRelative2Parent(child, parent){
+function getChildRectRelative2Parent(child, parent) {
   const childRect = child.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
 
   return {
     left: childRect.left - parentRect.left,
     top: childRect.top - parentRect.top,
-    width: childRect.width, 
+    width: childRect.width,
     height: childRect.height
   };
 
@@ -224,11 +262,6 @@ function generateSvgDataUri(dom: HTMLElement, width: number, height: number): st
  * @param sy number
  */
 async function generateCanvas(url, dwidth, dheight, dx = 0, dy = 0, swidth = dwidth, sheight = dheight, sx = 0, sy = 0): Promise<HTMLCanvasElement> {
-
-  let isSvg = false; // url is svg uri format, such as 'data:image/svg+xml;charset=utf-8,<svg ...'
-  if (url.indexOf(',<svg ') !== -1) {
-    isSvg = true;
-  }
 
   const img = new Image();
   img.setAttribute('crossorigin', 'anonymous');
@@ -328,7 +361,7 @@ async function shallowCloneNode(node): Promise<HTMLElement> {
 
   } else {
     const clone = node.cloneNode(false);
-  
+
     return clone;
   }
 }
@@ -350,6 +383,19 @@ function copyStyle(node, clone) {
 }
 
 /**
+ * copy attributes from origin node to cloned node
+ * @param node 
+ * @param clone 
+ */
+function copyAttributes(node, clone){
+  Array.from(node.attributes).forEach((attribute: any) => {
+    if(attribute.name === 'class' || attribute.name === 'id'){
+      clone.setAttribute(attribute.nodeName, attribute.nodeValue);
+    }
+  })
+}
+
+/**
  * deep clone node width style
  * @param node 
  */
@@ -358,6 +404,7 @@ async function deepCloneNode(node): Promise<HTMLElement> {
   const clone = await shallowCloneNode(node);
 
   if (clone instanceof HTMLElement) {
+    copyAttributes(node, clone);
     copyStyle(node, clone);
   }
 
