@@ -7,7 +7,8 @@ transfer a html dom to canvas/png/jpeg/svg element/multiple pictures
 const Dom2pic = require('dom2pic');
 
 const dom2pic = new Dom2pic({
-  root: document.querySelector('.content2screenshot')
+  root: document.querySelector('.content2screenshot'),
+  backgroundColor: '#e2e2e2'
 });
 
 dom2pic.toPng()
@@ -37,7 +38,7 @@ dom2pic.toCanvas()
   });
 
 
-dom2pic2.toMultiPic('.item', 'jpeg').then(results => {
+dom2pic2.toMultiPictures('.item', 'jpeg').then(results => {
   console.log('--- results ---', results);
 
   results.forEach(obj => {
@@ -50,8 +51,14 @@ dom2pic2.toMultiPic('.item', 'jpeg').then(results => {
 
 ```
 
-# API
-
+# API 
+* new Dom2pic(config)
+  * new a Dom2pic instance
+  * options
+    * root
+      HTMLElement | string; // root html dom to screenshot, cannot be absolute position
+    * backgroundColor 
+      string; // optional, set root dom backgroundColor
 * toCanvas
   * generate a canvas from a dom element
 * toPng
@@ -60,9 +67,13 @@ dom2pic2.toMultiPic('.item', 'jpeg').then(results => {
   * generate a jpeg base64 string from a dom element
 * toSvg
   * generate a svg from a dom element
-* toMultiPic
+* toMultiPictures
   * generate multiple pictures according to child dom className
-
+  * options
+    * childNodeSelector 
+      string; generate multiple pictures by childNodeSelector
+    * type 
+      png | jpeg
 
 # demo && development
 ```

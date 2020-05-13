@@ -10,7 +10,7 @@
 
 interface Options {
   root: HTMLElement; 
-  childNodeClassName?: string;
+  childNodeSelector?: string;
   width: number; // dom offsetWidth
   height: number; // dom offsetHeight
 }
@@ -142,17 +142,17 @@ export default class Dom2pic {
   }
 
   /**
-   * @param childNodeClassName string; child html dom to screenshot, if exists, generate multiple pictures according to child html dom
+   * @param childNodeSelector string; generate multiple pictures by childNodeSelector
    * @param type png | jpeg
    */
-  async toMultiPic(childNodeClassName, type = 'png'): Promise<ChildPicInfo[]> {
+  async toMultiPictures(childNodeSelector, type = 'png'): Promise<ChildPicInfo[]> {
 
     const canvas = await this.toCanvas();
     const totalPicUri = await canvas.toDataURL(`image/${type}`);
 
     const { root } = this.options;
 
-    const childNodes = root.querySelectorAll(childNodeClassName);
+    const childNodes = root.querySelectorAll(childNodeSelector);
 
     const output = [];
 

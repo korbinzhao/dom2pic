@@ -46,7 +46,7 @@ const App = () => {
 
     const dom2pic2 = new Dom2pic({root: document.querySelector('.content2screenshot') as HTMLElement});
 
-    dom2pic2.toMultiPic('.item').then(results => {
+    dom2pic2.toMultiPictures('.item').then(results => {
       console.log('--- results ---', results);
 
       results.forEach(obj => {
