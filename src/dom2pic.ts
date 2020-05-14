@@ -98,10 +98,13 @@ export default class Dom2pic {
     if (i > -1 && childNodeSelector) {
       const childNodes = clone.querySelectorAll(childNodeSelector);
 
-      showNodeAndHideSiblings(i, childNodes);
+      hideSiblings(i, childNodes);
 
       await sleep(200);
     }
+
+    // test
+    document.body.appendChild(clone);
 
     // forbidden screenshot the margin of the root node
     clone.style.margin = '0 0 0 0';
@@ -188,30 +191,22 @@ export default class Dom2pic {
 }
 
 /**
- * level up a node zindex from siblings
- * @param i 
+ * hide siblings except self
+ * @param i index in siblings wanna skip
  * @param siblings 
  */
-function showNodeAndHideSiblings(i, siblings) {
+function hideSiblings(i, siblings) {
 
   siblings.forEach((sibling, index) => {
-    if (index === i) {
-      sibling.style.visibility = 'visible';
-    } else {
+
+    if(index !== i){
       sibling.style.visibility = 'hidden';
+      if(sibling.style.position === 'absolute'){
+        sibling.style.display = 'none';
+      }
     }
   });
 
-}
-
-/**
- * set all nodes style.visibility to 'visible'
- * @param nodes 
- */
-function showNodes(nodes) {
-  nodes.forEach(node => {
-    node.style.visibility = 'visible';
-  });
 }
 
 /**

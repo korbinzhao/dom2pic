@@ -111,7 +111,7 @@ const App = () => {
           <rect x="50" y="20" width="150" height="150" style={{ fill: 'blue', stroke: 'pink', strokeWidth: 5, opacity: 0.5 }} />
         </svg>
 
-        <Table className="item" dataSource={dataSource} columns={columns} pagination={false} />
+        <Table style={{position: 'absolute'}} className="item table-item" dataSource={dataSource} columns={columns} pagination={false} />
 
         <p  className="item">123</p>
         <span className="text1 item">234</span>
