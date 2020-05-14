@@ -103,9 +103,6 @@ export default class Dom2pic {
       await sleep(200);
     }
 
-    // test
-    document.body.appendChild(clone);
-
     // forbidden screenshot the margin of the root node
     clone.style.margin = '0 0 0 0';
 
