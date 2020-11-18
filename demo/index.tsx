@@ -11,37 +11,38 @@ const App = () => {
   const doScreenshot = () => {
     const dom2pic = new Dom2pic({
       root: document.querySelector('.content2screenshot') as HTMLElement,
+      backgroundColor: 'lightblue'
     });
 
     dom2pic.toPng()
       .then(png => {
 
-        console.log('--- png ---', png);
+        // console.log('--- png ---', png);
 
         const img = document.createElement('img');
         img.src = png;
-        img.style.width = '100%';
-        document.body.appendChild(img);
+        img.style.width = '1000px';
+        document.body.append(img);
 
       });
 
-    dom2pic.toJpeg().then(jpeg => {
+  //   dom2pic.toJpeg().then(jpeg => {
 
-      console.log('--- jpeg ---', jpeg);
+  //     console.log('--- jpeg ---', jpeg);
 
-      const img = document.createElement('img');
-      img.src = jpeg;
-      img.style.width = '100%';
-      document.body.appendChild(img);
+  //     const img = document.createElement('img');
+  //     img.src = jpeg;
+  //     img.style.width = '100%';
+  //     document.body.appendChild(img);
 
-    })
+  //   })
 
-    dom2pic.toSvg().then(svg => {
+    // dom2pic.toSvg().then(svg => {
 
-      console.log('--- svg ---', svg);
+    //   // console.log('--- svg ---', svg);
 
-      document.body.appendChild(svg);
-    });
+    //   document.body.appendChild(svg);
+    // });
 
 
     const dom2pic2 = new Dom2pic({root: document.querySelector('.content2screenshot') as HTMLElement});
@@ -53,7 +54,7 @@ const App = () => {
         const img = document.createElement('img');
         img.src = obj.uri;
         img.style.width = '500px';
-        document.body.appendChild(img);
+        document.body.append(img);
       })
     })
 
@@ -107,13 +108,13 @@ const App = () => {
 
       <div className="content2screenshot">
 
-        <svg className="item" width="100px" height="100px">
-          <rect x="50" y="20" width="150" height="150" style={{ fill: 'blue', stroke: 'pink', strokeWidth: 5, opacity: 0.5 }} />
+        <svg className="item" width="200px" height="100px">
+          <rect x="50" y="20" width="150" height="100" style={{ fill: 'blue', stroke: 'pink', strokeWidth: 5, opacity: 0.5 }} />
         </svg>
 
-        <Table style={{position: 'absolute'}} className="item table-item" dataSource={dataSource} columns={columns} pagination={false} />
+        <Table style={{position: 'absolute', left: 500}} className="item table-item" dataSource={dataSource} columns={columns} pagination={false} />
 
-        <p  className="item">123</p>
+        <p  className="item" style={{width: 200}}>123</p>
         <span className="text1 item">234</span>
         <span className="text2 item">567</span>
 

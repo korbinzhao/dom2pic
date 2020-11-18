@@ -94,6 +94,8 @@ export default class Dom2pic {
 
     const clone = await deepCloneNode(root);
 
+    // 根节点margin设为0，避免生成图片时包含margin
+    clone.style.margin = '0px';
 
     if (i > -1 && childNodeSelector) {
       const childNodes = clone.querySelectorAll(childNodeSelector);
@@ -103,12 +105,11 @@ export default class Dom2pic {
       await sleep(200);
     }
 
-    // forbidden screenshot the margin of the root node
-    clone.style.margin = '0 0 0 0';
-
     const svgDataUri = generateSvgDataUri(clone, width, height);
 
-    const canvas = await generateCanvas(svgDataUri, width, height);
+    console.log('svgDataUri', svgDataUri)
+
+    const canvas = await generateCanvas(svgDataUri);
 
     return canvas;
   }
@@ -118,7 +119,10 @@ export default class Dom2pic {
 
     const { root, width, height } = this.options;
 
-    const clone = await deepCloneNode(root)
+    const clone = await deepCloneNode(root);
+
+     // 根节点margin设为0，避免生成图片时包含margin
+     clone.style.margin = '0px';
 
     const foreginObject = document.createElement('foreginObject');
     foreginObject.setAttribute('x', '0');
@@ -165,18 +169,15 @@ export default class Dom2pic {
 
     for await (const [i, node] of childNodes.entries()) {
 
-      const { left, top, width, height } = getChildRectRelative2Parent(node, root);
+      const childRectReleative2Parent = getChildRectRelative2Parent(node, root);
 
       const canvas = await this.toCanvas(i, childNodeSelector);
       const totalPicUri = await canvas.toDataURL(`image/${type}`);
 
-      const childCanvas = await generateCanvas(totalPicUri, width * SCALE, height * SCALE, 0, 0, width * SCALE, height * SCALE, left * SCALE, top * SCALE);
+      const childCanvas = await generateCanvas(totalPicUri, childRectReleative2Parent);
 
       output.push({
-        left,
-        top,
-        width,
-        height,
+        ...childRectReleative2Parent,
         uri: childCanvas.toDataURL(`image/${type}`)
       });
     }
@@ -215,11 +216,14 @@ function getChildRectRelative2Parent(child, parent) {
   const childRect = child.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
 
+  console.log('childRect', childRect);
+  console.log('parentRect', parentRect);
+
   return {
-    left: childRect.left - parentRect.left,
-    top: childRect.top - parentRect.top,
-    width: childRect.width,
-    height: childRect.height
+    l: (childRect.left - parentRect.left) / parentRect.width,
+    t: (childRect.top - parentRect.top) / parentRect.height,
+    w: childRect.width / parentRect.width,
+    h: childRect.height / parentRect.height,
   };
 
 }
@@ -253,14 +257,10 @@ function generateSvgDataUri(dom: HTMLElement, width: number, height: number): st
  * @param sx number
  * @param sy number
  */
-async function generateCanvas(url, dwidth, dheight, dx = 0, dy = 0, swidth = dwidth, sheight = dheight, sx = 0, sy = 0): Promise<HTMLCanvasElement> {
+async function generateCanvas(url, childRectReleative2Parent?): Promise<HTMLCanvasElement> {
 
   const img = new Image();
   img.setAttribute('crossorigin', 'anonymous');
-  img.setAttribute('width', dwidth);
-  img.setAttribute('height', dheight);
-
-  img.src = url;
 
   const canvas: HTMLCanvasElement = await new Promise((resolve, reject) => {
     img.onload = () => {
@@ -268,13 +268,27 @@ async function generateCanvas(url, dwidth, dheight, dx = 0, dy = 0, swidth = dwi
       const canvas = <HTMLCanvasElement>document.createElement('canvas');
 
       const ctx = canvas.getContext('2d');
-      canvas.width = dwidth * SCALE;
-      canvas.height = dheight * SCALE;
 
-      ctx.scale(SCALE, SCALE);
+      const width = img.naturalWidth * SCALE;
+      const height = img.naturalHeight * SCALE
+
+      canvas.width = width;
+      canvas.height = height;
+
+      let sx = 0, sy = 0, swidth = img.naturalWidth, sheight = img.naturalHeight;
+
+      if(childRectReleative2Parent){
+        const {l, t, w, h} = childRectReleative2Parent;
+        sx = l * img.naturalWidth;
+        sy = t * img.naturalHeight;
+        swidth = w * img.naturalWidth;
+        sheight = h * img.naturalHeight;
+      }
 
       // https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage
-      ctx.drawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+      ctx.drawImage(img, sx, sy, swidth, sheight, 0, 0, width, height);
+
+      ctx.scale(SCALE, SCALE);
 
       resolve(canvas);
     }
@@ -283,6 +297,7 @@ async function generateCanvas(url, dwidth, dheight, dx = 0, dy = 0, swidth = dwi
       reject(err);
     }
 
+    img.src = url;
 
   });
 
@@ -302,7 +317,7 @@ async function generateImage(uri, width, height): Promise<HTMLElement> {
 
     image.addEventListener('load', async () => {
       if (image.src.indexOf('data:image/') !== 0) {
-        const canvas = await generateCanvas(uri, width, height);
+        const canvas = await generateCanvas(uri);
         const dataUri = canvas.toDataURL();
         image.src = dataUri;
       } else {
