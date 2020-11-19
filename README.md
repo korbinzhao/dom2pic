@@ -38,16 +38,17 @@ dom2pic.toCanvas()
   });
 
 
-dom2pic2.toMultiPictures('.item', 'jpeg').then(results => {
+dom2pic.toMultiPictures('.item').then(results => {
   console.log('--- results ---', results);
 
   results.forEach(obj => {
     const img = document.createElement('img');
     img.src = obj.uri;
-    img.style.width = '200px';
-    document.body.appendChild(img);
+    img.style.width = '500px';
+    document.body.append(img);
   })
 })
+
 
 ```
 
